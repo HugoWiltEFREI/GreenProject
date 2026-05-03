@@ -1,30 +1,28 @@
 # GreenQuiz
 
-GreenQuiz est une application web éducative dédiée au Green IT.  
-Le projet permet de créer, gérer et jouer des quiz autour des bonnes pratiques numériques responsables.  
-L'architecture est volontairement simple et légère pour reduire l'empreinte technique (Flask, SQLite, front natif).  
+GreenQuiz est une application web educative dediee au Green IT.  
+Le projet permet de creer, gerer et jouer des quiz autour des bonnes pratiques numeriques responsables.  
+L'architecture est volontairement simple et legere pour reduire l'empreinte technique (Flask, SQLite, front natif).  
 L'objectif est de proposer une plateforme utile, maintenable et sobre en ressources.
 
-## Site déployé
+## Site deploye
 
 - Application en ligne : [https://greenproject-1f1e.onrender.com/](https://greenproject-1f1e.onrender.com/)
 
-## Équipe et rôles
+## Equipe et roles
 
-- `Membre 1` - Product Owner / Coordination projet
-- `Membre 2` - Développement back-end (Flask, routes, logique metier)
-- `Membre 3` - Développement front-end (templates, UI, UX)
-- `Membre 4` - Qualité, tests et déploiement
+- `Hugo W` - Coordination projet, ..............
+- `Charles Y` - .............
+- `Ornella T` - .......
 
-> Remplacer les noms des membres par les noms réels de votre Équipe.
 
 ## Stack technique et justification Green IT
 
-- `Python + Flask` : framework minimal, faible surcouche, moins de complexité et de dépendances.
-- `SQLite` : base légère sans serveur dédié, adaptée a un projet pédagogique avec faible coût infra.
+- `Python + Flask` : framework minimal, faible surcouche, moins de complexite et de dependances.
+- `SQLite` : base legere sans serveur dedie, adaptee a un projet pedagogique avec faible cout infra.
 - `HTML/CSS/JS natifs` : pas de framework front lourd, moins de JavaScript execute et moins de transfert reseau.
-- `Render` : déploiement simple et rapide, mutualisation de l'infrastructure.
-- `Werkzeug security` : hash des mots de passe pour la sécurité sans service externe additionnel.
+- `Render` : deploiement simple et rapide, mutualisation de l'infrastructure.
+- `Werkzeug security` : hash des mots de passe pour la securite sans service externe additionnel.
 
 ## Installation et lancement local
 
@@ -35,7 +33,7 @@ git clone <URL_DU_REPO>
 cd GreenProject
 ```
 
-### 2) Installer les dépendances
+### 2) Installer les dependances
 
 ```bash
 python -m pip install -r requirements.txt
@@ -51,12 +49,12 @@ python app.py
 
 - `http://127.0.0.1:8000`
 
-## Structure du dépôt (arborescence commentée)
+## Structure du depot
 
 ```text
 GreenProject/
 |- app.py                    # Application Flask (routes, auth, logique quiz, init DB)
-|- requirements.txt          # Dépendances Python
+|- requirements.txt          # Dependances Python
 |- README.md                 # Documentation du projet
 |- database/
 |  |- greenquiz.sqlite       # Base SQLite locale
@@ -71,30 +69,12 @@ GreenProject/
 |  |- register.html          # Inscription
 |  |- account*.html          # Espace personnel (profil/modification/suppression)
 |  |- users_*.html           # Ecran admin de gestion utilisateurs
-|  |- quizzes_*.html         # Création/édition/suppression quiz
+|  |- quizzes_*.html         # Creation/edition/suppression quiz
 |- docs/
-|  |- rapport.pdf            # Rapport final (à déposer ici)
+|  |- rapport.pdf            # Rapport final (a deposer ici)
 ```
 
-## Conventions de commit
-
-Convention adoptée : `type(scope): message court`
-
-Types utilisés :
-- `feat` : nouvelle fonctionnalité
-- `fix` : correction de bug
-- `refactor` : amélioration interne sans changement fonctionnel
-- `docs` : documentation
-- `test` : ajout/modification de tests
-- `chore` : maintenance technique
-
-Exemples :
-- `feat(auth): ajouter suppression de compte`
-- `fix(deploy): utiliser PORT fourni par Render`
-- `docs(readme): compléter la section installation`
 
 ## Lien vers le rapport PDF
 
-- Rapport : [docs/rapport.pdf](docs/rapport.pdf)
-
-> Si le PDF n'est pas encore versionné, ajouter le fichier `rapport.pdf` dans le dossier `docs/`.
+- Rapport : 
