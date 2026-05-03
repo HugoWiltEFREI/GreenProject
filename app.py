@@ -21,6 +21,14 @@ app = Flask(__name__, template_folder="templates", static_folder="static")
 app.secret_key = os.environ.get("SECRET_KEY", "greenquiz-dev-key")
 SEARCH_CACHE: dict[str, tuple[list[sqlite3.Row], int]] = {}
 
+_SITE_CSS_PATH = BASE_DIR / "static" / "assets" / "style.css"
+SITE_CSS = _SITE_CSS_PATH.read_text(encoding="utf-8")
+
+
+@app.context_processor
+def inject_site_css():
+    return {"site_css": SITE_CSS}
+
 
 def get_db() -> sqlite3.Connection:
     if "db" not in g:
