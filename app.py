@@ -300,7 +300,9 @@ def register():
         username = request.form.get("username", "").strip()
         password = request.form.get("password", "")
         errors = []
-        if not validate_email(email):
+        if not email:
+            errors.append("Email obligatoire.")
+        elif not validate_email(email):
             errors.append("Email invalide.")
         if len(username) < 2:
             errors.append("Nom utilisateur trop court.")
@@ -370,7 +372,9 @@ def account_edit():
         email = request.form.get("email", "").strip().lower()
         username = request.form.get("username", "").strip()
         errors = []
-        if not validate_email(email):
+        if not email:
+            errors.append("Email obligatoire.")
+        elif not validate_email(email):
             errors.append("Email invalide.")
         if len(username) < 2:
             errors.append("Nom utilisateur trop court.")
@@ -431,7 +435,9 @@ def users_new():
         if email == FORCED_ADMIN_EMAIL:
             is_admin = 1
         errors = []
-        if not validate_email(email):
+        if not email:
+            errors.append("Email obligatoire.")
+        elif not validate_email(email):
             errors.append("Email invalide.")
         if len(username) < 2:
             errors.append("Nom utilisateur trop court.")
@@ -473,7 +479,9 @@ def users_edit(user_id: int):
             is_admin = 1
         new_password = request.form.get("password", "")
         errors = []
-        if not validate_email(email):
+        if not email:
+            errors.append("Email obligatoire.")
+        elif not validate_email(email):
             errors.append("Email invalide.")
         if len(username) < 2:
             errors.append("Nom utilisateur trop court.")
@@ -519,6 +527,24 @@ def users_delete(user_id: int):
         flash("Utilisateur supprime.", "ok")
         return redirect(url_for("users_list"))
     return render_template("users_delete.html", target=target)
+
+
+@app.route("/account/delete", methods=["GET", "POST"])
+@login_required
+def account_delete():
+    user = current_user()
+    if request.method == "POST":
+        confirmed = request.form.get("confirm") == "yes"
+        if not confirmed:
+            flash("Confirmation obligatoire.", "error")
+            return render_template("account_delete.html", user=user)
+        db = get_db()
+        db.execute("DELETE FROM users WHERE id = ?", (user["id"],))
+        db.commit()
+        session.clear()
+        flash("Compte supprime.", "ok")
+        return redirect(url_for("home"))
+    return render_template("account_delete.html", user=user)
 
 
 @app.route("/quizzes")
