@@ -11,12 +11,10 @@ L'objectif est de proposer une plateforme utile, maintenable et sobre en ressour
 
 ## Equipe et roles
 
-- `Membre 1` - Product Owner / Coordination projet
-- `Membre 2` - Developpement back-end (Flask, routes, logique metier)
-- `Membre 3` - Developpement front-end (templates, UI, UX)
-- `Membre 4` - Qualite, tests et deploiement
+- `Hugo W` - Coordination projet, ..............
+- `Charles Y` - .............
+- `Ornella T` - .......
 
-> Remplacer les noms des membres par les noms reels de votre equipe.
 
 ## Stack technique et justification Green IT
 
@@ -51,7 +49,7 @@ python app.py
 
 - `http://127.0.0.1:8000`
 
-## Structure du depot (arborescence commentee)
+## Structure du depot
 
 ```text
 GreenProject/
@@ -76,25 +74,7 @@ GreenProject/
 |  |- rapport.pdf            # Rapport final (a deposer ici)
 ```
 
-## Conventions de commit
-
-Convention adoptee : `type(scope): message court`
-
-Types utilises :
-- `feat` : nouvelle fonctionnalite
-- `fix` : correction de bug
-- `refactor` : amelioration interne sans changement fonctionnel
-- `docs` : documentation
-- `test` : ajout/modification de tests
-- `chore` : maintenance technique
-
-Exemples :
-- `feat(auth): ajouter suppression de compte`
-- `fix(deploy): utiliser PORT fourni par Render`
-- `docs(readme): completer la section installation`
 
 ## Lien vers le rapport PDF
 
-- Rapport : [docs/rapport.pdf](docs/rapport.pdf)
-
-> Si le PDF n'est pas encore versionne, ajouter le fichier `rapport.pdf` dans le dossier `docs/`.
+- Rapport : 
