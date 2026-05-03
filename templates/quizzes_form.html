@@ -6,10 +6,10 @@
   <input id="titre" name="titre" value="{{ edit_quiz['titre'] if edit_quiz else '' }}" required>
   <label for="description">Description</label>
   <textarea id="description" name="description" rows="4" required>{{ edit_quiz['description'] if edit_quiz else '' }}</textarea>
-  <label for="difficult?">Difficult?</label>
-  <input id="difficult?" name="difficult?" placeholder="facile/moyen/difficile" value="{{ edit_quiz['difficult?'] if edit_quiz else '' }}" required>
-  <label for="cat?gorie">Cat?gorie</label>
-  <input id="cat?gorie" name="cat?gorie" value="{{ edit_quiz['cat?gorie'] if edit_quiz else '' }}" required>
+  <label for="difficulte">Difficulté</label>
+  <input id="difficulte" name="difficulte" placeholder="facile/moyen/difficile" value="{{ edit_quiz['difficulte'] if edit_quiz else '' }}" required>
+  <label for="categorie">Catégorie</label>
+  <input id="categorie" name="categorie" value="{{ edit_quiz['categorie'] if edit_quiz else '' }}" required>
   <p>
     <label>
       <input type="checkbox" name="est_publique" {% if not edit_quiz or edit_quiz['est_publique'] %}checked{% endif %}>
@@ -18,7 +18,7 @@
   </p>
   <label for="questions_json">Questions (JSON)</label>
   <textarea id="questions_json" name="questions_json" rows="12" required>{{ questions_json }}</textarea>
-  <p class="muted">Format: [{"texte":"...","type":"QCM","r?ponses_possibles":["a","b"],"r?ponse_correcte":"a","points":1}]</p>
+  <p class="muted">Format: [{"texte":"...","type":"QCM","reponses_possibles":["a","b"],"reponse_correcte":"a","points":1}]</p>
   <p><button type="submit">Enregistrer</button></p>
 </form>
 {% endblock %}

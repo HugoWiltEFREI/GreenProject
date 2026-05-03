@@ -2,7 +2,7 @@
 {% block content %}
 <section>
   <h1>Quiz publics GreenQuiz</h1>
-  <p>Les visiteurs peuvent jouer. Les utilisateurs connect?s peuvent aussi publier leurs scores.</p>
+  <p>Les visiteurs peuvent jouer. Les utilisateurs connectés peuvent aussi publier leurs scores.</p>
 </section>
 
 <section>
@@ -10,10 +10,10 @@
   <form method="get">
     <label for="q">Texte</label>
     <input id="q" name="q" value="{{ filters['q'] }}">
-    <label for="difficult?">Difficult?</label>
-    <input id="difficult?" name="difficult?" placeholder="facile/moyen/difficile" value="{{ filters['difficult?'] }}">
-    <label for="cat?gorie">Cat?gorie</label>
-    <input id="cat?gorie" name="cat?gorie" value="{{ filters['cat?gorie'] }}">
+    <label for="difficulte">Difficulté</label>
+    <input id="difficulte" name="difficulte" placeholder="facile/moyen/difficile" value="{{ filters['difficulte'] }}">
+    <label for="categorie">Catégorie</label>
+    <input id="categorie" name="categorie" value="{{ filters['categorie'] }}">
     <p><button type="submit">Filtrer</button></p>
   </form>
 </section>
@@ -25,20 +25,20 @@
     <article>
       <h3>{{ quiz['titre'] }}</h3>
       <p>{{ quiz['description'] }}</p>
-      <p class="muted">Cat?gorie: {{ quiz['cat?gorie'] }} | Difficult?: {{ quiz['difficult?'] }}</p>
+      <p class="muted">Catégorie: {{ quiz['categorie'] }} | Difficulté: {{ quiz['difficulte'] }}</p>
       <p><a href="{{ url_for('quiz_play', quiz_id=quiz['id']) }}">Jouer ce quiz</a></p>
     </article>
     {% endfor %}
   {% else %}
-    <p>Aucun quiz ne correspond ? la recherche.</p>
+    <p>Aucun quiz ne correspond à la recherche.</p>
   {% endif %}
   <div class="actions">
     {% if page > 1 %}
-      <a href="{{ url_for('home', page=page-1, q=filters['q'], difficult?=filters['difficult?'], cat?gorie=filters['cat?gorie']) }}">Page pr?c?dente</a>
+      <a href="{{ url_for('home', page=page-1, q=filters['q'], difficulte=filters['difficulte'], categorie=filters['categorie']) }}">Page précédente</a>
     {% endif %}
     <span>Page {{ page }} / {{ total_pages }}</span>
     {% if page < total_pages %}
-      <a href="{{ url_for('home', page=page+1, q=filters['q'], difficult?=filters['difficult?'], cat?gorie=filters['cat?gorie']) }}">Page suivante</a>
+      <a href="{{ url_for('home', page=page+1, q=filters['q'], difficulte=filters['difficulte'], categorie=filters['categorie']) }}">Page suivante</a>
     {% endif %}
   </div>
 </section>

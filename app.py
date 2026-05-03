@@ -76,8 +76,8 @@ def init_db() -> None:
             description TEXT NOT NULL,
             id_createur INTEGER NOT NULL,
             date_creation TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
-            difficult? TEXT NOT NULL CHECK(difficult? IN ('facile', 'moyen', 'difficile')),
-            cat?gorie TEXT NOT NULL,
+            difficulte TEXT NOT NULL CHECK(difficulte IN ('facile', 'moyen', 'difficile')),
+            categorie TEXT NOT NULL,
             est_publique INTEGER NOT NULL DEFAULT 1,
             nombre_questions INTEGER NOT NULL DEFAULT 0,
             FOREIGN KEY(id_createur) REFERENCES users(id) ON DELETE CASCADE
@@ -86,9 +86,9 @@ def init_db() -> None:
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             id_quiz INTEGER NOT NULL,
             texte TEXT NOT NULL,
-            type TEXT NOT NULL CHECK(type IN ('QCM', 'vrai/faux', 'r?ponse_courte')),
-            r?ponses_possibles TEXT,
-            r?ponse_correcte TEXT NOT NULL,
+            type TEXT NOT NULL CHECK(type IN ('QCM', 'vrai/faux', 'reponse_courte')),
+            reponses_possibles TEXT,
+            reponse_correcte TEXT NOT NULL,
             points INTEGER NOT NULL DEFAULT 1,
             FOREIGN KEY(id_quiz) REFERENCES quizzes(id) ON DELETE CASCADE
         );
@@ -103,7 +103,7 @@ def init_db() -> None:
         );
         CREATE INDEX IF NOT EXISTS idx_quizzes_creator ON quizzes(id_createur);
         CREATE INDEX IF NOT EXISTS idx_quizzes_public_date ON quizzes(est_publique, date_creation);
-        CREATE INDEX IF NOT EXISTS idx_quizzes_category ON quizzes(cat?gorie);
+        CREATE INDEX IF NOT EXISTS idx_quizzes_category ON quizzes(categorie);
         CREATE INDEX IF NOT EXISTS idx_questions_quiz ON questions(id_quiz);
         CREATE INDEX IF NOT EXISTS idx_sessions_quiz ON sessions_quiz(id_quiz);
         CREATE INDEX IF NOT EXISTS idx_sessions_user ON sessions_quiz(id_utilisateur);
@@ -142,7 +142,7 @@ def parse_questions_payload(payload: str) -> tuple[list[dict], list[str]]:
     except json.JSONDecodeError:
         return [], ["Le JSON des questions est invalide."]
     if not isinstance(loaded, list) or not loaded:
-        return [], ["Le JSON des questions doit ?tre une liste non vide."]
+        return [], ["Le JSON des questions doit être une liste non vide."]
     valid_questions: list[dict] = []
     for idx, item in enumerate(loaded, start=1):
         if not isinstance(item, dict):
@@ -150,33 +150,33 @@ def parse_questions_payload(payload: str) -> tuple[list[dict], list[str]]:
             continue
         qtype = str(item.get("type", "")).strip()
         texte = str(item.get("texte", "")).strip()
-        r?ponse = str(item.get("r?ponse_correcte", "")).strip()
+        reponse = str(item.get("reponse_correcte", "")).strip()
         points_raw = item.get("points", 1)
         try:
             points = int(points_raw)
         except (TypeError, ValueError):
             points = 0
-        possibles = item.get("r?ponses_possibles", [])
-        if qtype not in {"QCM", "vrai/faux", "r?ponse_courte"}:
+        possibles = item.get("reponses_possibles", [])
+        if qtype not in {"QCM", "vrai/faux", "reponse_courte"}:
             errors.append(f"Question {idx}: type invalide.")
         if len(texte) < 3:
-            errors.append(f"Question {idx}: ?nonc? trop court.")
-        if not r?ponse:
-            errors.append(f"Question {idx}: r?ponse correcte manquante.")
+            errors.append(f"Question {idx}: énoncé trop court.")
+        if not reponse:
+            errors.append(f"Question {idx}: reponse correcte manquante.")
         if points < 1:
             errors.append(f"Question {idx}: points invalides.")
         if qtype == "QCM":
             if not isinstance(possibles, list) or len(possibles) < 2:
-                errors.append(f"Question {idx}: un QCM demande au moins 2 r?ponses.")
+                errors.append(f"Question {idx}: un QCM demande au moins 2 reponses.")
         elif not isinstance(possibles, list):
             possibles = []
         valid_questions.append(
             {
                 "type": qtype,
                 "texte": texte,
-                "r?ponse_correcte": r?ponse,
+                "reponse_correcte": reponse,
                 "points": points,
-                "r?ponses_possibles": possibles,
+                "reponses_possibles": possibles,
             }
         )
     return valid_questions, errors
@@ -227,12 +227,12 @@ def inject_user():
 
 @app.errorhandler(400)
 def bad_request(_):
-    return render_template("error.html", code=400, message="Requ?te invalide."), 400
+    return render_template("error.html", code=400, message="Requête invalide."), 400
 
 
 @app.errorhandler(403)
 def forbidden(_):
-    return render_template("error.html", code=403, message="Acc?s refuse."), 403
+    return render_template("error.html", code=403, message="Accès refusé."), 403
 
 
 @app.errorhandler(404)
@@ -245,8 +245,8 @@ def home():
     page = parse_page()
     offset = (page - 1) * PAGE_SIZE
     q = request.args.get("q", "").strip().lower()
-    difficulty = request.args.get("difficult?", "").strip().lower()
-    category = request.args.get("cat?gorie", "").strip()
+    difficulty = request.args.get("difficulte", "").strip().lower()
+    category = request.args.get("categorie", "").strip()
     filters: list[str] = ["est_publique = 1"]
     params: list[object] = []
     if q:
@@ -254,10 +254,10 @@ def home():
         like = f"%{q}%"
         params.extend([like, like])
     if difficulty in ALLOWED_DIFFICULTIES:
-        filters.append("difficult? = ?")
+        filters.append("difficulte = ?")
         params.append(difficulty)
     if category:
-        filters.append("cat?gorie = ?")
+        filters.append("categorie = ?")
         params.append(category)
     where_clause = " AND ".join(filters)
     cache_key = f"{where_clause}|{tuple(params)}|{page}"
@@ -270,7 +270,7 @@ def home():
         ).fetchone()["c"]
         quizzes = db.execute(
             f"""
-            SELECT id, titre, description, difficult?, cat?gorie, date_creation
+            SELECT id, titre, description, difficulte, categorie, date_creation
             FROM quizzes
             WHERE {where_clause}
             ORDER BY date_creation DESC
@@ -286,7 +286,7 @@ def home():
         quizzes=quizzes,
         page=page,
         total_pages=total_pages,
-        filters={"q": q, "difficult?": difficulty, "cat?gorie": category},
+        filters={"q": q, "difficulte": difficulty, "categorie": category},
     )
 
 
@@ -307,12 +307,12 @@ def register():
         if len(username) < 2:
             errors.append("Nom utilisateur trop court.")
         if len(password) < 8:
-            errors.append("Mot de passe: 8 caract?res minimum.")
+            errors.append("Mot de passe: 8 caractères minimum.")
         db = get_db()
         if not errors:
             exists = db.execute("SELECT id FROM users WHERE email = ? LIMIT 1", (email,)).fetchone()
             if exists:
-                errors.append("Cet email existe d?j?.")
+                errors.append("Cet email existe déjà.")
         if errors:
             for err in errors:
                 flash(err, "error")
@@ -384,7 +384,7 @@ def account_edit():
                 "SELECT id FROM users WHERE email = ? AND id <> ? LIMIT 1", (email, user["id"])
             ).fetchone()
             if existing:
-                errors.append("Cet email est d?j? utilis?.")
+                errors.append("Cet email est déjà utilisé.")
         if errors:
             for err in errors:
                 flash(err, "error")
@@ -442,12 +442,12 @@ def users_new():
         if len(username) < 2:
             errors.append("Nom utilisateur trop court.")
         if len(password) < 8:
-            errors.append("Mot de passe: 8 caract?res minimum.")
+            errors.append("Mot de passe: 8 caractères minimum.")
         db = get_db()
         if not errors:
             exists = db.execute("SELECT id FROM users WHERE email = ? LIMIT 1", (email,)).fetchone()
             if exists:
-                errors.append("Cet email existe d?j?.")
+                errors.append("Cet email existe déjà.")
         if errors:
             for err in errors:
                 flash(err, "error")
@@ -457,7 +457,7 @@ def users_new():
             (email, username, generate_password_hash(password, method="pbkdf2:sha256"), is_admin),
         )
         db.commit()
-        flash("Utilisateur cr??.", "ok")
+        flash("Utilisateur créé.", "ok")
         return redirect(url_for("users_list"))
     return render_template("users_form.html", edit_user=None)
 
@@ -487,9 +487,9 @@ def users_edit(user_id: int):
             errors.append("Nom utilisateur trop court.")
         exists = db.execute("SELECT id FROM users WHERE email = ? AND id <> ? LIMIT 1", (email, user_id)).fetchone()
         if exists:
-            errors.append("Cet email est d?j? utilis?.")
+            errors.append("Cet email est déjà utilisé.")
         if new_password and len(new_password) < 8:
-            errors.append("Mot de passe: 8 caract?res minimum.")
+            errors.append("Mot de passe: 8 caractères minimum.")
         if errors:
             for err in errors:
                 flash(err, "error")
@@ -505,7 +505,7 @@ def users_edit(user_id: int):
                 (email, username, is_admin, user_id),
             )
         db.commit()
-        flash("Utilisateur modifi?.", "ok")
+        flash("Utilisateur modifié.", "ok")
         return redirect(url_for("users_list"))
     return render_template("users_form.html", edit_user=edit_user)
 
@@ -524,7 +524,7 @@ def users_delete(user_id: int):
             return render_template("users_delete.html", target=target)
         db.execute("DELETE FROM users WHERE id = ?", (user_id,))
         db.commit()
-        flash("Utilisateur supprim?.", "ok")
+        flash("Utilisateur supprimé.", "ok")
         return redirect(url_for("users_list"))
     return render_template("users_delete.html", target=target)
 
@@ -542,7 +542,7 @@ def account_delete():
         db.execute("DELETE FROM users WHERE id = ?", (user["id"],))
         db.commit()
         session.clear()
-        flash("Compte supprim?.", "ok")
+        flash("Compte supprimé.", "ok")
         return redirect(url_for("home"))
     return render_template("account_delete.html", user=user)
 
@@ -570,7 +570,7 @@ def quizzes_list():
     total = db.execute(f"SELECT COUNT(*) AS c FROM quizzes q WHERE {where}", params).fetchone()["c"]
     quizzes = db.execute(
         f"""
-        SELECT q.id, q.titre, q.cat?gorie, q.difficult?, q.est_publique, q.id_createur, u.username AS createur
+        SELECT q.id, q.titre, q.categorie, q.difficulte, q.est_publique, q.id_createur, u.username AS createur
         FROM quizzes q
         JOIN users u ON u.id = q.id_createur
         WHERE {where}
@@ -590,8 +590,8 @@ def quizzes_new():
     if request.method == "POST":
         titre = request.form.get("titre", "").strip()
         description = request.form.get("description", "").strip()
-        difficult? = request.form.get("difficult?", "").strip().lower()
-        cat?gorie = request.form.get("cat?gorie", "").strip()
+        difficulte = request.form.get("difficulte", "").strip().lower()
+        categorie = request.form.get("categorie", "").strip()
         est_publique = 1 if request.form.get("est_publique") == "on" else 0
         raw_questions = request.form.get("questions_json", "").strip()
         questions, q_errors = parse_questions_payload(raw_questions)
@@ -600,10 +600,10 @@ def quizzes_new():
             errors.append("Titre trop court.")
         if len(description) < 10:
             errors.append("Description trop courte.")
-        if difficult? not in ALLOWED_DIFFICULTIES:
-            errors.append("Difficult? invalide.")
-        if len(cat?gorie) < 2:
-            errors.append("Cat?gorie invalide.")
+        if difficulte not in ALLOWED_DIFFICULTIES:
+            errors.append("Difficulté invalide.")
+        if len(categorie) < 2:
+            errors.append("Catégorie invalide.")
         if errors:
             for err in errors:
                 flash(err, "error")
@@ -611,33 +611,33 @@ def quizzes_new():
         db = get_db()
         cursor = db.execute(
             """
-            INSERT INTO quizzes (titre, description, id_createur, date_creation, difficult?, cat?gorie, est_publique)
+            INSERT INTO quizzes (titre, description, id_createur, date_creation, difficulte, categorie, est_publique)
             VALUES (?, ?, ?, ?, ?, ?, ?)
             """,
-            (titre, description, user["id"], datetime.utcnow().isoformat(), difficult?, cat?gorie, est_publique),
+            (titre, description, user["id"], datetime.utcnow().isoformat(), difficulte, categorie, est_publique),
         )
         quiz_id = cursor.lastrowid
         for question in questions:
             db.execute(
                 """
-                INSERT INTO questions (id_quiz, texte, type, r?ponses_possibles, r?ponse_correcte, points)
+                INSERT INTO questions (id_quiz, texte, type, reponses_possibles, reponse_correcte, points)
                 VALUES (?, ?, ?, ?, ?, ?)
                 """,
                 (
                     quiz_id,
                     question["texte"],
                     question["type"],
-                    json.dumps(question["r?ponses_possibles"], ensure_ascii=True),
-                    question["r?ponse_correcte"],
+                    json.dumps(question["reponses_possibles"], ensure_ascii=True),
+                    question["reponse_correcte"],
                     question["points"],
                 ),
             )
         db.execute("UPDATE quizzes SET nombre_questions = ? WHERE id = ?", (len(questions), quiz_id))
         db.commit()
         clear_search_cache()
-        flash("Quiz cr??.", "ok")
+        flash("Quiz créé.", "ok")
         return redirect(url_for("quizzes_list"))
-    sample = '[{"texte":"2+2 ?","type":"QCM","r?ponses_possibles":["3","4"],"r?ponse_correcte":"4","points":1}]'
+    sample = '[{"texte":"2+2 ?","type":"QCM","reponses_possibles":["3","4"],"reponse_correcte":"4","points":1}]'
     return render_template("quizzes_form.html", edit_quiz=None, questions_json=sample)
 
 
@@ -647,7 +647,7 @@ def quizzes_edit(quiz_id: int):
     db = get_db()
     quiz = db.execute(
         """
-        SELECT id, titre, description, difficult?, cat?gorie, est_publique, id_createur
+        SELECT id, titre, description, difficulte, categorie, est_publique, id_createur
         FROM quizzes
         WHERE id = ? LIMIT 1
         """,
@@ -661,8 +661,8 @@ def quizzes_edit(quiz_id: int):
     if request.method == "POST":
         titre = request.form.get("titre", "").strip()
         description = request.form.get("description", "").strip()
-        difficult? = request.form.get("difficult?", "").strip().lower()
-        cat?gorie = request.form.get("cat?gorie", "").strip()
+        difficulte = request.form.get("difficulte", "").strip().lower()
+        categorie = request.form.get("categorie", "").strip()
         est_publique = 1 if request.form.get("est_publique") == "on" else 0
         raw_questions = request.form.get("questions_json", "").strip()
         questions, q_errors = parse_questions_payload(raw_questions)
@@ -671,56 +671,56 @@ def quizzes_edit(quiz_id: int):
             errors.append("Titre trop court.")
         if len(description) < 10:
             errors.append("Description trop courte.")
-        if difficult? not in ALLOWED_DIFFICULTIES:
-            errors.append("Difficult? invalide.")
-        if len(cat?gorie) < 2:
-            errors.append("Cat?gorie invalide.")
+        if difficulte not in ALLOWED_DIFFICULTIES:
+            errors.append("Difficulté invalide.")
+        if len(categorie) < 2:
+            errors.append("Catégorie invalide.")
         if errors:
             for err in errors:
                 flash(err, "error")
             return render_template("quizzes_form.html", edit_quiz=quiz, questions_json=raw_questions)
         db.execute(
-            "UPDATE quizzes SET titre = ?, description = ?, difficult? = ?, cat?gorie = ?, est_publique = ?, nombre_questions = ? WHERE id = ?",
-            (titre, description, difficult?, cat?gorie, est_publique, len(questions), quiz_id),
+            "UPDATE quizzes SET titre = ?, description = ?, difficulte = ?, categorie = ?, est_publique = ?, nombre_questions = ? WHERE id = ?",
+            (titre, description, difficulte, categorie, est_publique, len(questions), quiz_id),
         )
         db.execute("DELETE FROM questions WHERE id_quiz = ?", (quiz_id,))
         for question in questions:
             db.execute(
                 """
-                INSERT INTO questions (id_quiz, texte, type, r?ponses_possibles, r?ponse_correcte, points)
+                INSERT INTO questions (id_quiz, texte, type, reponses_possibles, reponse_correcte, points)
                 VALUES (?, ?, ?, ?, ?, ?)
                 """,
                 (
                     quiz_id,
                     question["texte"],
                     question["type"],
-                    json.dumps(question["r?ponses_possibles"], ensure_ascii=True),
-                    question["r?ponse_correcte"],
+                    json.dumps(question["reponses_possibles"], ensure_ascii=True),
+                    question["reponse_correcte"],
                     question["points"],
                 ),
             )
         db.commit()
         clear_search_cache()
-        flash("Quiz modifi?.", "ok")
+        flash("Quiz modifié.", "ok")
         return redirect(url_for("quizzes_list"))
     question_rows = db.execute(
-        "SELECT texte, type, r?ponses_possibles, r?ponse_correcte, points FROM questions WHERE id_quiz = ? ORDER BY id",
+        "SELECT texte, type, reponses_possibles, reponse_correcte, points FROM questions WHERE id_quiz = ? ORDER BY id",
         (quiz_id,),
     ).fetchall()
     normalized = []
     for row in question_rows:
         possibles = []
-        if row["r?ponses_possibles"]:
+        if row["reponses_possibles"]:
             try:
-                possibles = json.loads(row["r?ponses_possibles"])
+                possibles = json.loads(row["reponses_possibles"])
             except json.JSONDecodeError:
                 possibles = []
         normalized.append(
             {
                 "texte": row["texte"],
                 "type": row["type"],
-                "r?ponses_possibles": possibles,
-                "r?ponse_correcte": row["r?ponse_correcte"],
+                "reponses_possibles": possibles,
+                "reponse_correcte": row["reponse_correcte"],
                 "points": row["points"],
             }
         )
@@ -772,15 +772,15 @@ def quiz_play(quiz_id: int):
     if not quiz["est_publique"] and not can_manage_quiz(quiz, user):
         abort(403)
     questions = db.execute(
-        "SELECT id, texte, type, r?ponses_possibles, points FROM questions WHERE id_quiz = ? ORDER BY id",
+        "SELECT id, texte, type, reponses_possibles, points FROM questions WHERE id_quiz = ? ORDER BY id",
         (quiz_id,),
     ).fetchall()
     parsed_questions = []
     for row in questions:
         choices = []
-        if row["type"] == "QCM" and row["r?ponses_possibles"]:
+        if row["type"] == "QCM" and row["reponses_possibles"]:
             try:
-                choices = json.loads(row["r?ponses_possibles"])
+                choices = json.loads(row["reponses_possibles"])
             except json.JSONDecodeError:
                 choices = []
         parsed_questions.append(
@@ -818,13 +818,13 @@ def quiz_submit(quiz_id: int):
     if not quiz["est_publique"] and not can_manage_quiz(quiz, user):
         abort(403)
     question_rows = db.execute(
-        "SELECT id, type, r?ponse_correcte, points FROM questions WHERE id_quiz = ? ORDER BY id",
+        "SELECT id, type, reponse_correcte, points FROM questions WHERE id_quiz = ? ORDER BY id",
         (quiz_id,),
     ).fetchall()
     score = 0
     for row in question_rows:
         answer = request.form.get(f"q_{row['id']}", "").strip()
-        if answer and answer.lower() == row["r?ponse_correcte"].strip().lower():
+        if answer and answer.lower() == row["reponse_correcte"].strip().lower():
             score += row["points"]
     if user:
         db.execute(
