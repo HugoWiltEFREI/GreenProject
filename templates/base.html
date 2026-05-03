@@ -21,17 +21,17 @@
       {% if user["is_admin"] %}
       <li><a href="{{ url_for('users_list') }}">Utilisateurs</a></li>
       {% endif %}
-      <li><a href="{{ url_for('logout') }}">Deconnexion</a></li>
+      <li><a href="{{ url_for('logout') }}">D?connexion</a></li>
       {% else %}
       <li><a href="{{ url_for('login') }}">Connexion</a></li>
       <li><a href="{{ url_for('register') }}">Inscription</a></li>
       {% endif %}
     </ul>
-    <button id="toggleTheme" type="button" aria-label="Basculer le mode sombre">Theme</button>
+    <button id="toggleTh?me" type="button" aria-label="Basculer le mode sombre">Th?me</button>
   </nav>
 </header>
 <main class="wrap">
-  {% with messages = get_flashed_messages(with_categories=true) %}
+  {% with messages = get_flashed_messages(with_cat?gories=true) %}
     {% if messages %}
       {% for category, message in messages %}
       <p class="muted">{{ message }}</p>

@@ -2,13 +2,13 @@
 {% block content %}
 <h1>Supprimer mon compte</h1>
 <section>
-  <p>Cette action est definitive. Confirmer la suppression du compte <strong>{{ user['username'] }}</strong>.</p>
+  <p>Cette action est d?finitive. Confirmer la suppression du compte <strong>{{ user['username'] }}</strong>.</p>
   <form method="post">
     <label>
       <input type="checkbox" name="confirm" value="yes" required>
       Je confirme la suppression de mon compte
     </label>
-    <p><button type="submit">Supprimer definitivement</button></p>
+    <p><button type="submit">Supprimer d?finitivement</button></p>
   </form>
 </section>
 {% endblock %}

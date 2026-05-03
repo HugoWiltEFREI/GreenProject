@@ -1,30 +1,30 @@
 # GreenQuiz
 
-GreenQuiz est une application web educative dediee au Green IT.  
-Le projet permet de creer, gerer et jouer des quiz autour des bonnes pratiques numeriques responsables.  
-L'architecture est volontairement simple et legere pour reduire l'empreinte technique (Flask, SQLite, front natif).  
+GreenQuiz est une application web ?ducative d?di?e au Green IT.  
+Le projet permet de cr?er, g?rer et jouer des quiz autour des bonnes pratiques num?riques responsables.  
+L'architecture est volontairement simple et l?g?re pour reduire l'empreinte technique (Flask, SQLite, front natif).  
 L'objectif est de proposer une plateforme utile, maintenable et sobre en ressources.
 
-## Site deploye
+## Site d?ploy?
 
 - Application en ligne : [https://greenproject-1f1e.onrender.com/](https://greenproject-1f1e.onrender.com/)
 
-## Equipe et roles
+## ?quipe et r?les
 
 - `Membre 1` - Product Owner / Coordination projet
-- `Membre 2` - Developpement back-end (Flask, routes, logique metier)
-- `Membre 3` - Developpement front-end (templates, UI, UX)
-- `Membre 4` - Qualite, tests et deploiement
+- `Membre 2` - D?veloppement back-end (Flask, routes, logique metier)
+- `Membre 3` - D?veloppement front-end (templates, UI, UX)
+- `Membre 4` - Qualit?, tests et d?ploiement
 
-> Remplacer les noms des membres par les noms reels de votre equipe.
+> Remplacer les noms des membres par les noms r?els de votre ?quipe.
 
 ## Stack technique et justification Green IT
 
-- `Python + Flask` : framework minimal, faible surcouche, moins de complexite et de dependances.
-- `SQLite` : base legere sans serveur dedie, adaptee a un projet pedagogique avec faible cout infra.
+- `Python + Flask` : framework minimal, faible surcouche, moins de complexit? et de d?pendances.
+- `SQLite` : base l?g?re sans serveur d?di?, adapt?e a un projet p?dagogique avec faible co?t infra.
 - `HTML/CSS/JS natifs` : pas de framework front lourd, moins de JavaScript execute et moins de transfert reseau.
-- `Render` : deploiement simple et rapide, mutualisation de l'infrastructure.
-- `Werkzeug security` : hash des mots de passe pour la securite sans service externe additionnel.
+- `Render` : d?ploiement simple et rapide, mutualisation de l'infrastructure.
+- `Werkzeug security` : hash des mots de passe pour la s?curit? sans service externe additionnel.
 
 ## Installation et lancement local
 
@@ -35,7 +35,7 @@ git clone <URL_DU_REPO>
 cd GreenProject
 ```
 
-### 2) Installer les dependances
+### 2) Installer les d?pendances
 
 ```bash
 python -m pip install -r requirements.txt
@@ -51,12 +51,12 @@ python app.py
 
 - `http://127.0.0.1:8000`
 
-## Structure du depot (arborescence commentee)
+## Structure du d?p?t (arborescence comment?e)
 
 ```text
 GreenProject/
 |- app.py                    # Application Flask (routes, auth, logique quiz, init DB)
-|- requirements.txt          # Dependances Python
+|- requirements.txt          # D?pendances Python
 |- README.md                 # Documentation du projet
 |- database/
 |  |- greenquiz.sqlite       # Base SQLite locale
@@ -71,30 +71,30 @@ GreenProject/
 |  |- register.html          # Inscription
 |  |- account*.html          # Espace personnel (profil/modification/suppression)
 |  |- users_*.html           # Ecran admin de gestion utilisateurs
-|  |- quizzes_*.html         # Creation/edition/suppression quiz
+|  |- quizzes_*.html         # Cr?ation/?dition/suppression quiz
 |- docs/
-|  |- rapport.pdf            # Rapport final (a deposer ici)
+|  |- rapport.pdf            # Rapport final (? d?poser ici)
 ```
 
 ## Conventions de commit
 
-Convention adoptee : `type(scope): message court`
+Convention adopt?e : `type(scope): message court`
 
-Types utilises :
-- `feat` : nouvelle fonctionnalite
+Types utilis?s :
+- `feat` : nouvelle fonctionnalit?
 - `fix` : correction de bug
-- `refactor` : amelioration interne sans changement fonctionnel
+- `refactor` : am?lioration interne sans changement fonctionnel
 - `docs` : documentation
 - `test` : ajout/modification de tests
 - `chore` : maintenance technique
 
 Exemples :
 - `feat(auth): ajouter suppression de compte`
-- `fix(deploy): utiliser PORT fourni par Render`
-- `docs(readme): completer la section installation`
+- `fix(deploy): utilis?r PORT fourni par Render`
+- `docs(readme): compl?ter la section installation`
 
 ## Lien vers le rapport PDF
 
 - Rapport : [docs/rapport.pdf](docs/rapport.pdf)
 
-> Si le PDF n'est pas encore versionne, ajouter le fichier `rapport.pdf` dans le dossier `docs/`.
+> Si le PDF n'est pas encore versionn?, ajouter le fichier `rapport.pdf` dans le dossier `docs/`.
