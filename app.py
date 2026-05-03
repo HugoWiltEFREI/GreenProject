@@ -16,6 +16,7 @@ DB_PATH = BASE_DIR / "database" / "greenquiz.sqlite"
 PAGE_SIZE = 20
 ALLOWED_DIFFICULTIES = {"facile", "moyen", "difficile"}
 EMAIL_RE = re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
+FORCED_ADMIN_EMAIL = "admin@efrei.net"
 
 app = Flask(__name__, template_folder="templates", static_folder="static")
 app.secret_key = os.environ.get("SECRET_KEY", "greenquiz-dev-key")
@@ -112,6 +113,7 @@ def init_db() -> None:
         db.execute("ALTER TABLE users ADD COLUMN is_admin INTEGER NOT NULL DEFAULT 0")
     if not table_has_column(db, "quizzes", "nombre_questions"):
         db.execute("ALTER TABLE quizzes ADD COLUMN nombre_questions INTEGER NOT NULL DEFAULT 0")
+    db.execute("UPDATE users SET is_admin = 1 WHERE email = ?", (FORCED_ADMIN_EMAIL,))
     db.commit()
     db.close()
 
@@ -314,7 +316,7 @@ def register():
                 flash(err, "error")
             return render_template("register.html")
         users_count = db.execute("SELECT COUNT(*) AS c FROM users").fetchone()["c"]
-        is_admin = 1 if users_count == 0 else 0
+        is_admin = 1 if users_count == 0 or email == FORCED_ADMIN_EMAIL else 0
         db.execute(
             "INSERT INTO users (email, username, password_hash, is_admin) VALUES (?, ?, ?, ?)",
             (email, username, generate_password_hash(password, method="pbkdf2:sha256"), is_admin),
@@ -426,6 +428,8 @@ def users_new():
         username = request.form.get("username", "").strip()
         password = request.form.get("password", "")
         is_admin = 1 if request.form.get("is_admin") == "on" else 0
+        if email == FORCED_ADMIN_EMAIL:
+            is_admin = 1
         errors = []
         if not validate_email(email):
             errors.append("Email invalide.")
@@ -465,6 +469,8 @@ def users_edit(user_id: int):
         email = request.form.get("email", "").strip().lower()
         username = request.form.get("username", "").strip()
         is_admin = 1 if request.form.get("is_admin") == "on" else 0
+        if email == FORCED_ADMIN_EMAIL:
+            is_admin = 1
         new_password = request.form.get("password", "")
         errors = []
         if not validate_email(email):
